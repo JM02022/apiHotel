@@ -99,25 +99,31 @@ router.patch('/ReservaPatch/:idReserva',(req,res) => {
 
 router.delete('/EliminarHabitacion/:idHabitacion',(req,res) => {
   const {idHabitacion} = req.params
+  const habitacion = servicioHabitaciones.findBy(idHabitacion)
   servicioHabitaciones.delete(idHabitacion);
   res.status(200).json({
-    mensaje: 'se elimno habitacion'
+    mensaje: 'se elimno habitacion',
+    datos: habitacion
   })
 })
 
 router.delete('/EliminarReserva/:idReserva',(req,res) => {
   const {idReserva} = req.params
+  const reserva = servicioReservas.findBy(idReserva)
   servicioReservas.delete(idReserva)
   res.status(200).json({
-    mensaje: 'se elimno reserva'
+    mensaje: 'se elimno reserva',
+    dato: reserva
   })
 })
 
 router.delete('/EliminarSolicitudReserva/id:SolicitudReserva',(req,res) => {
   const {SolicitudReserva} = req.params
+  const reserva = servicioReservas.findBy(SolicitudReserva)
   servicioReservas.delete(solicitudReserva)
   res.status(200).json({
-    mensaje: 'se elimno solicitud de reserva'
+    mensaje: 'se elimno solicitud de reserva',
+    dato: reserva
   })
 })
 
