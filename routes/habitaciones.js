@@ -31,7 +31,7 @@ router.get('/:codH',controlValidar(findByHabitacionSchema,'params'),async (req,r
 router.post('/',controlValidar(crearHabitacionSchema,'body'),async (req,res,next) => {
   try {
     const body = req.body
-    const habitacion = await servicioReservas.create(body)
+    const habitacion = await servicioHabitaciones.create(body)
     res.status(200).json({
       mensaje: 'registro de habitacion exitoso',
       datosHabitacion: habitacion
