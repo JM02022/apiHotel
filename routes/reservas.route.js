@@ -1,132 +1,96 @@
 const express = require("express")
 const router = express.Router()
 
-const HabitacionesService = require('../services/habitaciones.service')
-const ReservaService = require('../services/reserva.service')
+const controlValidar = require("../middlewares/validation.middleware")
+const {crearReservaSchema,actualizarReservaSchema,findByReservaSchema} = require("../schemas/reserva.schema")
 
-const servicioHabitaciones = new HabitacionesService()
+const ReservaService = require('../services/reserva.service')
 const servicioReservas = new ReservaService()
 
-router.get('/solicitudReservas',(req,res) => {
-  const solicitudesReservas = servicioReservas.findAll()
-  res.status(200).json(solicitudesReservas)
+router.get('/',async (req,res,next) => {
+  try {
+    const reservas = await servicioReservas.findAll()
+    res.status(200).json(reservas)
+  } catch (error) {
+    next(error)
+  }
+
 })
 
-router.get('/habitaciones',(req,res) => {
-  const habitaciones = servicioHabitaciones.findAll()
-  res.status(200).json(habitaciones)
+router.get('/:codR',controlValidar(findByReservaSchema,'params'),async (req,res,next) => {
+  try {
+    const {codR} = req.params;
+    const reserva = await servicioReservas.findBy(codR)
+    res.status(200).json(reserva)
+  } catch (error) {
+    next(error)
+  }
+
 })
 
-router.get('/reservas',(req,res) => {
-  const reservas = servicioReservas.findAll()
-  res.status(200).json(reservas)
+router.post('/',controlValidar(crearReservaSchema,'body'),async (req,res,next) => {
+  try {
+    const body = req.body
+    const reserva = await servicioReservas.create(body)
+    res.status(200).json({
+      mensaje: 'registro de reserva exitoso',
+      datosreserva: reserva
+    })
+  } catch (error) {
+    next(error)
+  }
 })
 
-router.get('/habitaciones/:idHabitacion',(req,res) => {
-  const {idHabitacion} = req.params
-  const habitacion = servicioHabitaciones.findBy(idHabitacion)
-  res.status(200).json(habitacion)
+router.put('/:codR',controlValidar(actualizarReservaSchema,'body'),async(req, res, next) => {
+  try {
+    const { codR } = req.params
+    const body = {
+      codR: codR,
+      ...req.body
+    }
+    const reserva = await servicioReservas.update(codR, body)
+    res.status(200).json({
+      mensaje: 'reserva actualizada',
+      datos: reserva
+    })
+
+  } catch (error) {
+    next(error)
+  }
 })
 
-router.get('/solicitudReservas/:idSolicitudReserva',(req,res) => {
-  const {idSolicitudReserva} = req.params
-  const solicitudReserva = servicioReservas.findBy(idSolicitudReserva)
-  res.status(200).json(solicitudReserva)
+router.patch('/:codR',controlValidar(actualizarReservaSchema,'body'),async(req, res, next) => {
+  try {
+    const { codR } = req.params
+    const body = {
+      codR: codR,
+      ...req.body
+    }
+    const reserva = await servicioReservas.updateParcial(codR, body)
+    res.status(200).json({
+      mensaje: 'reserva actualizada parcial',
+      datos: reserva
+    })
+
+  } catch (error) {
+    next(error)
+  }
 })
 
-router.get('/Reservas/:idReserva',(req,res) => {
-  const {idReserva} = req.params
-  const reserva = servicioReservas.findBy(idReserva)
-  res.status(200).json(reserva)
-})
+router.delete('/:codR',controlValidar(findByReservaSchema,'params'),async (req,res,next) => {
+  try {
+    const {codR} = req.params
+    const reservaEliminada = await servicioReservas.delete(codR)
+    res.status(200).json({
+      mensaje: "reserva eliminada",
+      dato: reservaEliminada
+    })
 
-router.post('/crearReserva',(req,res) => {
-  const body = req.body
-  servicioReservas.create(body)
-  res.status(200).json({
-    mensaje: 'reserva creada',
-    datosReserva: body
-  })
-})
+  } catch (error) {
+    next(error)
 
-router.post('/crearHabitacion',(req,res) => {
-  const body = req.body
-  servicioHabitaciones.create(body)
-  res.status(200).json({
-    mensaje: 'habitacion creada',
-    datosHabitacion: body
-  })
+  }
 })
-
-router.put('/habitacionPut/:idHabitacion',(req,res) =>{
-  const {idHabitacion} = req.params
-  const body = req.body
-  servicioHabitaciones.update(idHabitacion,body)
-  res.status(200).json({
-    mensaje: 'habitacion actualizada -> metodo put',
-    datos: servicioHabitaciones.findBy(idHabitacion)
-  })
-})
-
-router.put('/reservaPut/:idReserva',(req,res) =>{
-  const {idReserva} = req.params
-  const body = req.body
-  servicioReservas.update(idReserva,body)
-  res.status(200).json({
-    mensaje: 'habitacion actualizada -> metodo put',
-    datos: servicioReservas.findBy(idReserva)
-  })
-})
-
-router.patch('/HabitacionPatch/:idHabitacion',(req,res) => {
-  const {idHabitacion} = req.params
-  const body = req.body
-  servicioHabitaciones.update(idHabitacion,body)
-  res.status(200).json({
-    mensaje: 'habitacion actualizada -> metodo patch',
-    datos: servicioHabitaciones.findBy(idHabitacion)
-  })
-})
-router.patch('/ReservaPatch/:idReserva',(req,res) => {
-  const {idReserva} = req.params
-  const body = req.body
-  servicioReservas.update(idReserva,body)
-  res.status(200).json({
-    mensaje: 'habitacion actualizada -> metodo patch',
-    datos: servicioReservas.findBy(idReserva)
-  })
-})
-
-router.delete('/EliminarHabitacion/:idHabitacion',(req,res) => {
-  const {idHabitacion} = req.params
-  const habitacion = servicioHabitaciones.findBy(idHabitacion)
-  servicioHabitaciones.delete(idHabitacion);
-  res.status(200).json({
-    mensaje: 'se elimno habitacion',
-    datos: habitacion
-  })
-})
-
-router.delete('/EliminarReserva/:idReserva',(req,res) => {
-  const {idReserva} = req.params
-  const reserva = servicioReservas.findBy(idReserva)
-  servicioReservas.delete(idReserva)
-  res.status(200).json({
-    mensaje: 'se elimno reserva',
-    dato: reserva
-  })
-})
-
-router.delete('/EliminarSolicitudReserva/id:SolicitudReserva',(req,res) => {
-  const {SolicitudReserva} = req.params
-  const reserva = servicioReservas.findBy(SolicitudReserva)
-  servicioReservas.delete(solicitudReserva)
-  res.status(200).json({
-    mensaje: 'se elimno solicitud de reserva',
-    dato: reserva
-  })
-})
-
 
 module.exports = router
 

@@ -1,4 +1,5 @@
 const faker = require("faker")
+const boom = require('@hapi/boom')
 class ReservaService{
   constructor(){
     this.Reservas = []
@@ -24,39 +25,59 @@ class ReservaService{
       })
     }
   }
-  create(Reserva){
-    Reserva.codR = faker.datatype.uuid()
-    this.Reservas.push(Reserva)
-  }
-  update(id,Reserva){
-    const Update = this.findBy(id)
-    if(Update != undefined){
-      Update.nombreCliente = (Reserva.nombreCliente != undefined)? Reserva.nombreCliente:Update.nombreCliente
-      Update.apellidosCliente = (Reserva.apellidosCliente != undefined)? Reserva.apellidosCliente:Update.apellidosCliente
-      Update.correoCliente = (Reserva.correoCliente != undefined)? Reserva.correoCliente:Update.correoCliente
-      Update.numeroCelularCliente = (Reserva.numeroCelularCliente != undefined)?  Reserva.numeroCelularCliente:Update.numeroCelularCliente
-      Update.fechaIngreso = (Reserva.fechaIngreso != undefined)? Reserva.fechaIngreso:Update.fechaIngreso
-      Update.fechaSalida = (Reserva.fechaSalida != undefined)? Reserva.fechaSalida:Update.fechaSalida
-      Update.cantidadPersonas = (Reserva.cantidadPersonas != undefined)? Reserva.cantidadPersonas:Update.cantidadPersonas
-      Update.tipoHabitacion = (Reserva.tipoHabitacion != undefined)? Reserva.tipoHabitacion:Update.tipoHabitacion
-      Update.Estado = (Reserva.Estado != undefined)? Reserva.Estado:Update.Estado
-      Update.pagado = (Reserva.pagado != undefined)? Reserva.pagado:Update.pagado
+  async create(reserva) {
+    let nuevaReserva = {
+      codR: faker.datatype.uuid(),
+      ...reserva
     }
-    // else{
-    //   console.log("No existe reserva")
-    // }
+    this.Reservas.push(nuevaReserva)
+    return nuevaReserva
   }
-  delete(id){
-    const Eliminar = this.findBy(id)
-    if(Eliminar != undefined){
-      this.Reservas.splice(this.Reservas.indexOf(Eliminar),1)
+
+  async update(id, reserva) {
+    const posReserva = this.Reservas.findIndex(item => item.codR == id)
+    if (posReserva === -1) {
+      throw boom.notFound("No se encuentra reserva")
+    }
+    this.Reservas[posReserva] = reserva
+    return this.Reservas[posReserva]
+  }
+
+  async updateParcial(id, reservaParcial) {
+    const posReserva = this.Reservas.findIndex(item => item.codR == id)
+    if (posReserva === -1) {
+      throw boom.notFound("No se encuentra reserva")
+    }
+    const reserva = this.Reservas[posReserva]
+    this.Reservas[posReserva] = {
+      ...reserva,
+      ...reservaParcial
+    }
+    return this.Reservas[posReserva]
+  }
+
+  async delete(id) {
+    const posReserva = this.Reservas.findIndex(item => item.codR == id)
+    if (posReserva === -1) {
+      throw boom.notFound("No se encuentra reserva")
+    }
+    this.Reservas.splice(posReserva, 1)
+    return {
+      mensaje: 'Reserva elimanada',
+      id
     }
   }
-  findAll(){
+
+  async findAll() {
     return this.Reservas
   }
-  findBy(id){
-    return this.Reservas.find(item => item.codR === id)
+
+  async findBy(id) {
+    const reserva = this.Reservas.find(item => item.codR == id)
+    if (!reserva) {
+      throw boom.notFound("No se encuentra reserva")
+    }
+    return reserva
   }
 }
 

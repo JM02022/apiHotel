@@ -1,15 +1,16 @@
 const faker = require("faker")
-class HabitacionesService{
-  constructor(){
+const boom = require('@hapi/boom');
+class HabitacionesService {
+  constructor() {
     this.Habitaciones = []
     this.generarHabitaciones()
   }
-  generarHabitaciones(){
-     const tipoHabitacion = ["Matromonial","Duplex","Cuadruples","Suite","Junio Suite","Familiar"]
-     const limite = 10
-     for (let index = 0; index < limite; index++) {
+  generarHabitaciones() {
+    const tipoHabitacion = ["Matromonial", "Duplex", "Cuadruples", "Suite", "Junio Suite", "Familiar"]
+    const limite = 10
+    for (let index = 0; index < limite; index++) {
       var rand = Math.floor(Math.random() * tipoHabitacion.length);
-       this.Habitaciones.push({
+      this.Habitaciones.push({
         codH: faker.datatype.uuid(),
         caracteristicas: faker.commerce.productDescription(),
         tipoHabitacionH: tipoHabitacion[rand],
@@ -17,38 +18,62 @@ class HabitacionesService{
         precioHabitacion: Math.floor(Math.random() * (500 - 100)) + 100,
         pisoHabitacion: Math.floor(Math.random() * (10 - 1)) + 1,
         capacidad: Math.floor(Math.random() * (6 - 1)) + 1
-       })
-     }
-  }
-  create(Habitacion){
-    Habitacion.codH = faker.datatype.uuid()
-    this.Habitaciones.push(Habitacion)
-  }
-  update(cod,Habitacion){
-    const Update = this.findBy(cod)
-    if(Update != undefined){
-      Update.caracteristicas = (Habitacion.caracteristicas != undefined)? Habitacion.caracteristicas:Update.caracteristicas
-      Update.tipoHabitacion = (Habitacion.tipoHabitacion != undefined)? Habitacion.tipoHabitacion:Update.tipoHabitacion
-      Update.nroHabitacion = (Habitacion.nroHabitacion != undefined)? Habitacion.nroHabitacion:Update.nroHabitacion
-      Update.precioHabitacion = (Habitacion.precioHabitacion != undefined)? Habitacion.precioHabitacion:Update.precioHabitacion
-      Update.pisoHabitacion = (Habitacion.pisoHabitacion != undefined)? Habitacion.pisoHabitacion:Update.pisoHabitacion
-      Update.capacidad = (Habitacion.capacidad != undefined)? Habitacion.capacidad:Update.capacidad
-    }
-    // else{
-    //   console.log("No existe habitacion")
-    // }
-  }
-  delete(id){
-    const Eliminar = this.findBy(id)
-    if(Eliminar != undefined){
-      this.Habitaciones.splice(this.Habitaciones.indexOf(Eliminar),1)
+      })
     }
   }
-  findAll(){
+  async create(habitacion) {
+    let nuevaHabitacion = {
+      codH: faker.datatype.uuid(),
+      ...habitacion
+    }
+    this.Habitaciones.push(nuevaHabitacion)
+    return nuevaHabitacion
+  }
+
+  async update(id, habitacion) {
+    const posHabitacion = this.Habitaciones.findIndex(item => item.codH == id)
+    if (posHabitacion === -1) {
+      throw boom.notFound("No se encuentra habitacion")
+    }
+    this.Habitaciones[posHabitacion] = habitacion
+    return this.Habitaciones[posHabitacion]
+  }
+
+  async updateParcial(id, habitacionParcial) {
+    const posHabitacion = this.Habitaciones.findIndex(item => item.codH == id)
+    if (posHabitacion === -1) {
+      throw boom.notFound("No se encuentra habitacion")
+    }
+    const habitacion = this.Habitaciones[posHabitacion]
+    this.Habitaciones[posHabitacion] = {
+      ...habitacion,
+      ...habitacionParcial
+    }
+    return this.Habitaciones[posHabitacion]
+  }
+
+  async delete(id) {
+    const posHabitacion = this.Habitaciones.findIndex(item => item.codH == id)
+    if (posHabitacion === -1) {
+      throw boom.notFound("No se encuentra habitacion")
+    }
+    this.Habitaciones.splice(posHabitacion, 1)
+    return {
+      mensaje: 'habitacion elimanada',
+      id
+    }
+  }
+
+  async findAll() {
     return this.Habitaciones
   }
-  findBy(id){
-    return this.Habitaciones.find(item => item.codH === id)
+
+  async findBy(id) {
+    const habitacion = this.Habitaciones.find(item => item.codH == id)
+    if (!habitacion) {
+      throw boom.notFound("No se encuentra habitacion")
+    }
+    return habitacion
   }
 }
 
