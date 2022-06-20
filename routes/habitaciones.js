@@ -80,10 +80,9 @@ router.patch('/:codH',controlValidar(actualizarHabitacionesSchema,'body'),async(
 router.delete('/:codH',controlValidar(findByHabitacionSchema,'params'),async (req,res,next) => {
   try {
     const {codH} = req.params
-    const habitacionEliminada = await servicioHabitaciones.delete(codH)
+    await servicioHabitaciones.delete(codH)
     res.status(200).json({
-      mensaje: "habitacion eliminada",
-      dato: habitacionEliminada
+      mensaje: "habitacion eliminada"
     })
 
   } catch (error) {

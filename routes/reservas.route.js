@@ -77,13 +77,12 @@ router.patch('/:codR',controlValidar(actualizarReservaSchema,'body'),async(req, 
   }
 })
 
-router.delete('/:codR',controlValidar(findByReservaSchema,'params'),async (req,res,next) => {
+router.delete('/:id',controlValidar(findByReservaSchema,'params'),async (req,res,next) => {
   try {
-    const {codR} = req.params
-    const reservaEliminada = await servicioReservas.delete(codR)
+    const {id} = req.params
+    await servicioReservas.delete(id)
     res.status(200).json({
       mensaje: "reserva eliminada",
-      dato: reservaEliminada
     })
 
   } catch (error) {

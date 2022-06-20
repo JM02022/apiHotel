@@ -1,83 +1,107 @@
-const faker = require("faker")
-const boom = require('@hapi/boom')
+const boom = require('@hapi/boom');
+const crypto = require('crypto')//uuid
+const {models} = require('../libs/sequelize')
 class ReservaService{
-  constructor(){
-    this.Reservas = []
-    this.generarReservas()
-  }
-  generarReservas(){
-    const tipoHabitacion = ["Matromonial","Duplex","Cuadruples","Suite","Junio Suite","Familiar"]
-    const limite = 10
-    for (let index = 0; index < limite; index++) {
-      var rand = Math.floor(Math.random() * tipoHabitacion.length);
-      this.Reservas.push({
-      codR: faker.datatype.uuid(),
-      nombreCliente: faker.name.firstName(),
-      apellidosCliente: faker.name.lastName(),
-      correoCliente: faker.internet.email(),
-      numeroCelularCliente: faker.phone.phoneNumber(),
-      fechaIngreso: faker.datatype.datetime(),
-      fechaSalida: faker.datatype.datetime(),
-      cantidadPersonas: Math.floor(Math.random() * (6 - 1)) + 1,
-      tipoHabitacion: tipoHabitacion[rand],
-      Estado: "SIN CONFIRMAR",
-      pagado: "NO"
-      })
-    }
-  }
+  constructor() {}
+
   async create(reserva) {
-    let nuevaReserva = {
-      codR: faker.datatype.uuid(),
+    const nuevaReserva = {
+      id: crypto.randomUUID(),
       ...reserva
     }
-    this.Reservas.push(nuevaReserva)
-    return nuevaReserva
+    const {
+      id,
+      fechaIngresoR,
+      fechaSalidaR,
+      catidadPersonasR,
+      codH,
+      codC,
+      codRE,
+      precioR
+    } = nuevaReserva
+    const salida = await models.reserva.create(nuevaReserva)
+    return salida
   }
 
   async update(id, reserva) {
-    const posReserva = this.Reservas.findIndex(item => item.codR == id)
-    if (posReserva === -1) {
-      throw boom.notFound("No se encuentra reserva")
+    const {
+      fechaIngresoR,
+      fechaSalidaR,
+      catidadPersonasR,
+      codH,
+      codC,
+      codRE,
+      precioR
+    } = reserva
+    const data = await models.reserva.update({
+      fechaIngresoR:fechaIngresoR,
+      fechaSalidaR:fechaSalidaR,
+      catidadPersonasR:catidadPersonasR,
+      codH:codH,
+      codC:codC,
+      codRE:codRE,
+      precioR:precioR
+      },
+      {where:{id:id}}
+    )
+    if(data == 0){
+      throw boom.notFound('reserva no encontrada')
     }
-    this.Reservas[posReserva] = reserva
-    return this.Reservas[posReserva]
+    return {
+      id:id,
+      ...reserva
+    }
   }
 
-  async updateParcial(id, reservaParcial) {
-    const posReserva = this.Reservas.findIndex(item => item.codR == id)
-    if (posReserva === -1) {
-      throw boom.notFound("No se encuentra reserva")
+  async updateParcial(id, reservaUpdate) {
+    const {
+      fechaIngresoR,
+      fechaSalidaR,
+      catidadPersonasR,
+      codH,
+      codC,
+      codRE,
+      precioR
+    } = reservaUpdate
+    const data = await models.reserva.update({
+      fechaIngresoR:fechaIngresoR,
+      fechaSalidaR:fechaSalidaR,
+      catidadPersonasR:catidadPersonasR,
+      codH:codH,
+      codC:codC,
+      codRE:codRE,
+      precioR:precioR
+      },
+      {where:{id:id}}
+    )
+    if(data == 0){
+      throw boom.notFound('reserva no encontrada')
     }
-    const reserva = this.Reservas[posReserva]
-    this.Reservas[posReserva] = {
-      ...reserva,
-      ...reservaParcial
+    return {
+      id:id,
+      ...reservaUpdate
     }
-    return this.Reservas[posReserva]
   }
 
   async delete(id) {
-    const posReserva = this.Reservas.findIndex(item => item.codR == id)
-    if (posReserva === -1) {
-      throw boom.notFound("No se encuentra reserva")
-    }
-    this.Reservas.splice(posReserva, 1)
-    return {
-      mensaje: 'Reserva elimanada',
-      id
+    const data = await models.reserva.destroy({
+      where:{id:id},
+    }) 
+    if(!data){
+      throw boom.notFound('reserva no encontrada')
     }
   }
 
   async findAll() {
-    return this.Reservas
+    const data = await models.reserva.findAll();
+    return data;
   }
-
   async findBy(id) {
-    const reserva = this.Reservas.find(item => item.codR == id)
-    if (!reserva) {
-      throw boom.notFound("No se encuentra reserva")
+    const data = await models.reserva.findByPk(id)
+    if(!data){
+      throw boom.notFound('reserva no encontrada')
     }
-    return reserva
+    return data
   }
 }
 

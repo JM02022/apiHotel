@@ -17,10 +17,10 @@ router.get('/',async (req,res,next) => {
 
 })
 
-router.get('/:codE',controlValidar(findByRecepcionistaSchema,'params'),async (req,res,next) => {
+router.get('/:codRE',controlValidar(findByRecepcionistaSchema,'params'),async (req,res,next) => {
   try {
-    const {codE} = req.params;
-    const recepcionista = await servicioRecepcion.findBy(codE)
+    const {codRE} = req.params;
+    const recepcionista = await servicioRecepcion.findBy(codRE)
     res.status(200).json(recepcionista)
   } catch (error) {
     next(error)
@@ -33,7 +33,7 @@ router.post('/',controlValidar(crearRecepcionistaSchema,'body'),async (req,res,n
     const body = req.body
     const recepcionista = await servicioRecepcion.create(body)
     res.status(200).json({
-      mensaje: 'registro de empleado exitoso',
+      mensaje: 'registro de recepcionista exitoso',
       datosRecepcion: recepcionista
     })
   } catch (error) {
@@ -41,14 +41,14 @@ router.post('/',controlValidar(crearRecepcionistaSchema,'body'),async (req,res,n
   }
 })
 
-router.put('/:codE',controlValidar(actualizarRecepcionistaSchema,'body'),async(req, res, next) => {
+router.put('/:codRE',controlValidar(actualizarRecepcionistaSchema,'body'),async(req, res, next) => {
   try {
-    const { codE } = req.params
+    const {codRE } = req.params
     const body = {
-      codE: codE,
+      codRE: codRE,
       ...req.body
     }
-    const recepcionista = await servicioRecepcion.update(codE, body)
+    const recepcionista = await servicioRecepcion.update(codRE, body)
     res.status(200).json({
       mensaje: 'empleado actualizado',
       datos: recepcionista
@@ -59,14 +59,14 @@ router.put('/:codE',controlValidar(actualizarRecepcionistaSchema,'body'),async(r
   }
 })
 
-router.patch('/:codE',controlValidar(actualizarRecepcionistaSchema,'body'),async(req, res, next) => {
+router.patch('/:codRE',controlValidar(actualizarRecepcionistaSchema,'body'),async(req, res, next) => {
   try {
-    const { codE } = req.params
+    const {codRE } = req.params
     const body = {
-      codE: codE,
+      codRE: codRE,
       ...req.body
     }
-    const recepcionista = await servicioRecepcion.updateParcial(codE, body)
+    const recepcionista = await servicioRecepcion.updateParcial(codRE, body)
     res.status(200).json({
       mensaje: 'empleado actualizado parcialmente',
       datos: recepcionista
@@ -77,13 +77,12 @@ router.patch('/:codE',controlValidar(actualizarRecepcionistaSchema,'body'),async
   }
 })
 
-router.delete('/:codE',controlValidar(findByRecepcionistaSchema,'params'),async (req,res,next) => {
+router.delete('/:codRE',controlValidar(findByRecepcionistaSchema,'params'),async (req,res,next) => {
   try {
-    const {codE} = req.params
-    const recepcionistaEliminado = await servicioRecepcion.delete(codE)
+    const {codRE} = req.params
+    await servicioRecepcion.delete(codRE)
     res.status(200).json({
-      mensaje: "empleado eliminada",
-      dato: recepcionistaEliminado
+      mensaje: "recepcinoista eliminado"
     })
 
   } catch (error) {

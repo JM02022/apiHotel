@@ -1,46 +1,36 @@
 const Joi = require('joi');
 
-const codR = Joi.string().uuid()
-const nombreCliente = Joi.string().min(3)
-const apellidosCliente = Joi.string().min(5).max(30)
-const correoCliente = Joi.string().email().max(50);
-const numeroCelularCliente = Joi.string().alphanum().min(9)
-const fechaIngreso = Joi.date()
-const fechaSalida = Joi.date()
-const cantidadPersonas = Joi.number().min(1).max(8)
-const tipoHabitacion = Joi.string().min(10)
-const Estado = Joi.string()
-const pagado = Joi.string()
+const id = Joi.string().uuid()
+const fechaIngresoR = Joi.date()
+const fechaSalidaR = Joi.date()
+const catidadPersonasR = Joi.number().min(1).max(8)
+const codH = Joi.string().min(3) //codigo habitacion
+const codC = Joi.string().min(3) //codigoCliente
+const codRE = Joi.string().min(3) //codigo recepcionista
+const precioR = Joi.number().min(100)
 
 const crearReservaSchema = Joi.object({
-  codR: codR.required(),
-  nombreCliente: nombreCliente.required(),
-  apellidosCliente: apellidosCliente.required(),
-  correoCliente: correoCliente.required(),
-  numeroCelularCliente: numeroCelularCliente.required(),
-  fechaIngreso: fechaIngreso.required(),
-  fechaSalida: fechaSalida.required(),
-  cantidadPersonas: cantidadPersonas.required(),
-  tipoHabitacion: tipoHabitacion.required(),
-  Estado,
-  pagado
+  fechaIngresoR: fechaIngresoR.required(),
+  fechaSalidaR: fechaSalidaR.required(),
+  catidadPersonasR: catidadPersonasR.required(),
+  codH: codH.required(),
+  codC: codC.required(),
+  codRE: codRE.required(),
+  precioR: precioR.required()
 })
 
 const actualizarReservaSchema = Joi.object({
-  nombreCliente,
-  apellidosCliente,
-  correoCliente,
-  numeroCelularCliente,
-  fechaIngreso,
-  fechaSalida,
-  cantidadPersonas,
-  tipoHabitacion,
-  Estado,
-  pagado
+  fechaIngresoR,
+  fechaSalidaR,
+  catidadPersonasR,
+  codH,
+  codC,
+  codRE,
+  precioR
 })
 
 const findByReservaSchema = Joi.object({
-  codR: codR.required()
+  id: id.required()
 })
 
 module.exports = {crearReservaSchema,actualizarReservaSchema,findByReservaSchema}

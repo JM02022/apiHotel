@@ -1,79 +1,107 @@
-const faker = require("faker")
 const boom = require('@hapi/boom');
+const crypto = require('crypto')//uuid
+const {models} = require('../libs/sequelize')
 class HabitacionesService {
-  constructor() {
-    this.Habitaciones = []
-    this.generarHabitaciones()
-  }
-  generarHabitaciones() {
-    const tipoHabitacion = ["Matromonial", "Duplex", "Cuadruples", "Suite", "Junio Suite", "Familiar"]
-    const limite = 10
-    for (let index = 0; index < limite; index++) {
-      var rand = Math.floor(Math.random() * tipoHabitacion.length);
-      this.Habitaciones.push({
-        codH: faker.datatype.uuid(),
-        caracteristicas: faker.commerce.productDescription(),
-        tipoHabitacionH: tipoHabitacion[rand],
-        nroHabitacion: Math.floor(Math.random() * (50 - 1)) + 1,
-        precioHabitacion: Math.floor(Math.random() * (500 - 100)) + 100,
-        pisoHabitacion: Math.floor(Math.random() * (10 - 1)) + 1,
-        capacidad: Math.floor(Math.random() * (6 - 1)) + 1
-      })
-    }
-  }
+  constructor() {}
+
   async create(habitacion) {
-    let nuevaHabitacion = {
-      codH: faker.datatype.uuid(),
+    const nuevaHabitacion = {
+      codH: crypto.randomUUID(),
       ...habitacion
     }
-    this.Habitaciones.push(nuevaHabitacion)
-    return nuevaHabitacion
+    const {
+      codH,
+      caracteristicasH,
+      tipoH,
+      nroH,
+      precioH,
+      pisoH,
+      capacidadH,
+      estadoH
+    } = nuevaHabitacion
+    const salida = await models.habitacion.create(nuevaHabitacion)
+    return salida
   }
 
   async update(id, habitacion) {
-    const posHabitacion = this.Habitaciones.findIndex(item => item.codH == id)
-    if (posHabitacion === -1) {
-      throw boom.notFound("No se encuentra habitacion")
+    const {
+      caracteristicasH,
+      tipoH,
+      nroH,
+      precioH,
+      pisoH,
+      capacidadH,
+      estadoH
+    } = habitacion
+    const data = await models.habitacion.update({
+      caracteristicasH:caracteristicasH,
+      tipoH:tipoH,
+      nroH:nroH,
+      precioH:precioH,
+      pisoH:pisoH,
+      capacidadH:capacidadH,
+      estadoH:estadoH,
+      },
+      {where:{codH:id}}
+    )
+    if(data == 0){
+      throw boom.notFound('habitacion no encontrada')
     }
-    this.Habitaciones[posHabitacion] = habitacion
-    return this.Habitaciones[posHabitacion]
+    return {
+      codH:id,
+      ...habitacion
+    }
   }
 
   async updateParcial(id, habitacionParcial) {
-    const posHabitacion = this.Habitaciones.findIndex(item => item.codH == id)
-    if (posHabitacion === -1) {
-      throw boom.notFound("No se encuentra habitacion")
+    const {
+      caracteristicasH,
+      tipoH,
+      nroH,
+      precioH,
+      pisoH,
+      capacidadH,
+      estadoH
+    } = habitacionParcial
+    const data = await models.habitacion.update({
+      caracteristicasH:caracteristicasH,
+      tipoH:tipoH,
+      nroH:nroH,
+      precioH:precioH,
+      pisoH:pisoH,
+      capacidadH:capacidadH,
+      estadoH:estadoH,
+      },
+      {where:{codH:id}}
+    )
+    if(data == 0){
+      throw boom.notFound('habitacion no encontrada')
     }
-    const habitacion = this.Habitaciones[posHabitacion]
-    this.Habitaciones[posHabitacion] = {
-      ...habitacion,
+    return {
+      codH:id,
       ...habitacionParcial
     }
-    return this.Habitaciones[posHabitacion]
   }
 
   async delete(id) {
-    const posHabitacion = this.Habitaciones.findIndex(item => item.codH == id)
-    if (posHabitacion === -1) {
-      throw boom.notFound("No se encuentra habitacion")
-    }
-    this.Habitaciones.splice(posHabitacion, 1)
-    return {
-      mensaje: 'habitacion elimanada',
-      id
+    const data = await models.habitacion.destroy({
+      where:{codH:id},
+    }) 
+    if(!data){
+      throw boom.notFound('habitacion no encontrada')
     }
   }
 
   async findAll() {
-    return this.Habitaciones
+    const data = await models.habitacion.findAll();
+    return data;
   }
-
   async findBy(id) {
-    const habitacion = this.Habitaciones.find(item => item.codH == id)
-    if (!habitacion) {
-      throw boom.notFound("No se encuentra habitacion")
+    const data = await models.habitacion.findByPk(id)
+    if(!data){
+      throw boom.notFound('habitacion no encontrada')
     }
-    return habitacion
+    return data
   }
 }
 

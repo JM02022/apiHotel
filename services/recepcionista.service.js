@@ -1,78 +1,108 @@
-const faker = require("faker")
-const boom = require('@hapi/boom')
+const boom = require('@hapi/boom');
+const crypto = require('crypto')//uuid
+const {models} = require('../libs/sequelize')
+
 class recepcionistaService {
-  constructor() {
-    this.recepcionstas = []
-    this.generarRecepcionista()
-  }
-  generarRecepcionista() {
-    const limite = 10
-    for (let index = 0; index < limite; index++) {
-      this.recepcionstas.push({
-        codE: faker.datatype.uuid(),
-        nombre: faker.name.firstName(),
-        apellidoP: faker.name.lastName(),
-        apellidoM: faker.name.lastName(),
-        contrasenia: faker.internet.password(),
-        correo: faker.internet.email(),
-        direccion: faker.address.streetAddress(),
-        telefono: faker.phone.phoneNumber()
-      })
-    }
-  }
+  constructor() {}
+
   async create(recepcionista) {
-    let nuevoRecepcionista = {
-      codE: faker.datatype.uuid(),
+    const nuevoRecepcionista = {
+      codRE: crypto.randomUUID(),
       ...recepcionista
     }
-    this.recepcionstas.push(nuevoRecepcionista)
-    return nuevoRecepcionista
+    const {
+      codRE,
+      nombre,
+      apellidoP,
+      apellidoM,
+      contrasenia,
+      correo,
+      direccion,
+      telefono
+    } = nuevoRecepcionista
+    const salida = await models.recepcionista.create(nuevoRecepcionista)
+    return salida
   }
 
   async update(id, recepcionista) {
-    const posRecepcionista = this.recepcionstas.findIndex(item => item.codE == id)
-    if (posRecepcionista === -1) {
-      throw boom.notFound("No se encuentra recepcionista")
+    const {
+      nombre,
+      apellidoP,
+      apellidoM,
+      contrasenia,
+      correo,
+      direccion,
+      telefono
+    } = recepcionista
+    const data = await models.recepcionista.update({
+      nombre:nombre,
+      apellidoP:apellidoP,
+      apellidoM:apellidoM,
+      contrasenia:contrasenia,
+      correo:correo,
+      direccion:direccion,
+      telefono:telefono
+      },
+      {where:{codRE:id}}
+    )
+    if(data == 0){
+      throw boom.notFound('recepcionista no encontrado')
     }
-    this.recepcionstas[posRecepcionista] = recepcionista
-    return this.recepcionstas[posRecepcionista]
+    return {
+      codRE:id,
+      ...recepcionista
+    }
   }
 
   async updateParcial(id, recepcionistaParcial) {
-    const posRecepcionista = this.recepcionstas.findIndex(item => item.codE == id)
-    if (posRecepcionista === -1) {
-      throw boom.notFound("No se encuentra recepcionista")
+    const {
+      nombre,
+      apellidoP,
+      apellidoM,
+      contrasenia,
+      correo,
+      direccion,
+      telefono
+    } = recepcionistaParcial
+    const data = await models.recepcionista.update({
+      nombre:nombre,
+      apellidoP:apellidoP,
+      apellidoM:apellidoM,
+      contrasenia:contrasenia,
+      correo:correo,
+      direccion:direccion,
+      telefono:telefono
+      },
+      {where:{codRE:id}}
+    )
+    if(data == 0){
+      throw boom.notFound('recepcionista no encontrado')
     }
-    const recepcionista = this.recepcionstas[posRecepcionista]
-    this.recepcionstas[posRecepcionista] = {
-      ...recepcionista,
+    return {
+      codRE:id,
       ...recepcionistaParcial
     }
-    return this.recepcionstas[posRecepcionista]
   }
 
   async delete(id) {
-    const posRecepcionista = this.recepcionstas.findIndex(item => item.codE == id)
-    if (posRecepcionista === -1) {
-      throw boom.notFound("No se encuentra recepcionista")
-    }
-    this.recepcionstas.splice(posRecepcionista, 1)
-    return {
-      mensaje: 'recepcionista elimanado',
-      id
+    const data = await models.recepcionista.destroy({
+      where:{codRE:id},
+    }) 
+    if(!data){
+      throw boom.notFound('recepcionista no encontrado')
     }
   }
 
   async findAll() {
-    return this.recepcionstas
+    const data = await models.recepcionista.findAll();
+    return data;
   }
-
   async findBy(id) {
-    const recepcionista = this.recepcionstas.find(item => item.codE == id)
-    if (!recepcionista) {
-      throw boom.notFound("No se encuentra recepcionista")
+    const data = await models.recepcionista.findByPk(id)
+    if(!data){
+      throw boom.notFound('recepcionista no encontrado')
     }
-    return recepcionista
+    return data
   }
 }
 

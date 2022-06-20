@@ -1,30 +1,32 @@
 const Joi = require('joi')
 
 const codH = Joi.string().uuid()
-const caracteristicas = Joi.string().min(10)
-const tipoHabitacionH = Joi.string().min(10)
-const nroHabitacion = Joi.number().min(1)
-const precioHabitacion = Joi.number().min(1)
-const pisoHabitacion = Joi.number().min(1)
-const capacidad = Joi.number().min(1).max(8)
+const caracteristicasH = Joi.string().min(10)
+const tipoH = Joi.string().min(10)
+const nroH = Joi.number().min(1)
+const precioH = Joi.number().min(100)
+const pisoH = Joi.number().min(1).max(5)
+const capacidadH = Joi.number().min(1).max(8)
+const estadoH = Joi.string()
 
 const crearHabitacionSchema = Joi.object({
-  codH:codH.required(),
-  caracteristicas:caracteristicas.required(),
-  tipoHabitacionH:tipoHabitacionH.required(),
-  nroHabitacion:nroHabitacion.required(),
-  precioHabitacion:precioHabitacion.required(),
-  pisoHabitacion:pisoHabitacion.required(),
-  capacidad:capacidad.required()
+  caracteristicasH:caracteristicasH.required(),
+  tipoH:tipoH.required(),
+  nroH:nroH.required(),
+  precioH:precioH.required(),
+  pisoH:pisoH.required(),
+  capacidadH:capacidadH.required(),
+  estadoH: estadoH.required()
 })
 
 const actualizarHabitacionesSchema = Joi.object({
-  caracteristicas,
-  tipoHabitacionH,
-  nroHabitacion,
-  precioHabitacion,
-  pisoHabitacion,
-  capacidad
+  caracteristicasH,
+  tipoH,
+  nroH,
+  precioH,
+  pisoH,
+  capacidadH,
+  estadoH
 })
 
 const findByHabitacionSchema = Joi.object({
