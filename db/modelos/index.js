@@ -8,6 +8,7 @@ function setupModels(sequelize){
     Habitacion.init(habitacionSchema,Habitacion.config(sequelize))
     Recepcionista.init(recepcionistaSchema, Recepcionista.config(sequelize))
     Reserva.init(reservaSchema,Reserva.config(sequelize))
+
     ClienteReserva.associate(sequelize.models) //asociacion
     Habitacion.associate(sequelize.models)
     Recepcionista.associate(sequelize.models)

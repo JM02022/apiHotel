@@ -17,10 +17,10 @@ router.get('/',async (req,res,next) => {
 
 })
 
-router.get('/:codR',controlValidar(findByReservaSchema,'params'),async (req,res,next) => {
+router.get('/:id',controlValidar(findByReservaSchema,'params'),async (req,res,next) => {
   try {
-    const {codR} = req.params;
-    const reserva = await servicioReservas.findBy(codR)
+    const {id} = req.params;
+    const reserva = await servicioReservas.findBy(id)
     res.status(200).json(reserva)
   } catch (error) {
     next(error)
@@ -41,14 +41,14 @@ router.post('/',controlValidar(crearReservaSchema,'body'),async (req,res,next) =
   }
 })
 
-router.put('/:codR',controlValidar(actualizarReservaSchema,'body'),async(req, res, next) => {
+router.put('/:id',controlValidar(actualizarReservaSchema,'body'),async(req, res, next) => {
   try {
-    const { codR } = req.params
+    const { id } = req.params
     const body = {
-      codR: codR,
+      id: id,
       ...req.body
     }
-    const reserva = await servicioReservas.update(codR, body)
+    const reserva = await servicioReservas.update(id, body)
     res.status(200).json({
       mensaje: 'reserva actualizada',
       datos: reserva
@@ -59,14 +59,14 @@ router.put('/:codR',controlValidar(actualizarReservaSchema,'body'),async(req, re
   }
 })
 
-router.patch('/:codR',controlValidar(actualizarReservaSchema,'body'),async(req, res, next) => {
+router.patch('/:id',controlValidar(actualizarReservaSchema,'body'),async(req, res, next) => {
   try {
-    const { codR } = req.params
+    const { id } = req.params
     const body = {
-      codR: codR,
+      id: id,
       ...req.body
     }
-    const reserva = await servicioReservas.updateParcial(codR, body)
+    const reserva = await servicioReservas.updateParcial(id, body)
     res.status(200).json({
       mensaje: 'reserva actualizada parcial',
       datos: reserva
