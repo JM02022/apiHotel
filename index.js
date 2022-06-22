@@ -4,9 +4,10 @@ const rutas = require('./routes');
 const {manejarError,mostrarError, boomManejarError} = require('./middlewares/error.middleware')
 
 const aplicacion = express()
+const cors = require('cors')
 
 const port = 3500
-
+aplicacion.use(cors())
 aplicacion.use(express.json())
 
 aplicacion.get('/',(req,res) =>{

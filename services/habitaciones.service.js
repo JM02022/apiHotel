@@ -17,7 +17,8 @@ class HabitacionesService {
       precioH,
       pisoH,
       capacidadH,
-      estadoH
+      estadoH,
+      imagen
     } = nuevaHabitacion
     const salida = await models.habitacion.create(nuevaHabitacion)
     return salida
@@ -31,7 +32,8 @@ class HabitacionesService {
       precioH,
       pisoH,
       capacidadH,
-      estadoH
+      estadoH,
+      imagen
     } = habitacion
     const data = await models.habitacion.update({
       caracteristicasH:caracteristicasH,
@@ -41,6 +43,7 @@ class HabitacionesService {
       pisoH:pisoH,
       capacidadH:capacidadH,
       estadoH:estadoH,
+      imagen:imagen
       },
       {where:{codH:id}}
     )
@@ -61,7 +64,8 @@ class HabitacionesService {
       precioH,
       pisoH,
       capacidadH,
-      estadoH
+      estadoH,
+      imagen
     } = habitacionParcial
     const data = await models.habitacion.update({
       caracteristicasH:caracteristicasH,
@@ -71,6 +75,7 @@ class HabitacionesService {
       pisoH:pisoH,
       capacidadH:capacidadH,
       estadoH:estadoH,
+      imagen:imagen
       },
       {where:{codH:id}}
     )

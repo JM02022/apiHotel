@@ -42,6 +42,11 @@ const habitacionSchema = {
         allowNull: false,
         field: 'estado_habitacion',
         type: DataTypes.STRING
+    },
+    imagen: {
+        allowNull: false,
+        field: 'imagen_habitaicon',
+        type: DataTypes.STRING
     }
 }
 class Habitacion extends Model{

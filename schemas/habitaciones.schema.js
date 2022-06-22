@@ -8,6 +8,7 @@ const precioH = Joi.number().min(100)
 const pisoH = Joi.number().min(1).max(5)
 const capacidadH = Joi.number().min(1).max(8)
 const estadoH = Joi.string()
+const imagen = Joi.string()
 
 const crearHabitacionSchema = Joi.object({
   caracteristicasH:caracteristicasH.required(),
@@ -16,7 +17,8 @@ const crearHabitacionSchema = Joi.object({
   precioH:precioH.required(),
   pisoH:pisoH.required(),
   capacidadH:capacidadH.required(),
-  estadoH: estadoH.required()
+  estadoH: estadoH.required(),
+  imagen: imagen.required()
 })
 
 const actualizarHabitacionesSchema = Joi.object({
@@ -26,7 +28,8 @@ const actualizarHabitacionesSchema = Joi.object({
   precioH,
   pisoH,
   capacidadH,
-  estadoH
+  estadoH,
+  imagen
 })
 
 const findByHabitacionSchema = Joi.object({
